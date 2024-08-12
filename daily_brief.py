@@ -7,6 +7,7 @@ def get_daily_brief(date):
     """
     獲取端傳媒的每日簡報
     """
+    # 如果用戶沒有輸入日期，則使用當前日期
     if date is None:
         date = datetime.now().strftime("%Y%m%d")
     url = f"https://theinitium.com/article/{date}-daily-brief"
@@ -61,7 +62,7 @@ def get_daily_brief(date):
         return f"# 錯誤\n\n獲取日報時發生錯誤: {e}"
 
 # save_to_markdown
-def save_to_markdown(content):
+def save_to_markdown(content, date):
     """
     將內容保存為Markdown文件到桌面
     """
@@ -70,8 +71,8 @@ def save_to_markdown(content):
     # 構建桌面路徑
     desktop_path = os.path.join(home_dir, "Desktop")
     
-    # 生成文件名，格式為 YYYY-MM-DD-daily-brief.md
-    filename = f"{datetime.now().strftime('%Y-%m-%d')}-daily-brief.md"
+    # 生成文件名，格式為 YYYYMMDD-daily-brief.md
+    filename = f"{date}-daily-brief.md"
     # 構建完整的文件路徑
     file_path = os.path.join(desktop_path, filename)
     
@@ -84,6 +85,9 @@ def save_to_markdown(content):
         print(f"保存文件時發生錯誤: {e}")
 
 if __name__ == "__main__":
+    
+    # 獲取用戶輸入的日期
     user_input = input("請輸入日期 (YYYYMMDD) 或按 Enter 獲取今天的簡報: ")
+    
     daily_brief = get_daily_brief(user_input if user_input else None)
-    save_to_markdown(daily_brief)
+    save_to_markdown(daily_brief, user_input)
