@@ -3,6 +3,19 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import os
 
+
+def main():
+
+    # 獲取用戶輸入的日期
+    user_input = input("請輸入日期 (YYYYMMDD) 或按 Enter 獲取今天的簡報: ")
+
+    # 獲取每日簡報
+    daily_brief = get_daily_brief(user_input if user_input else None)
+    
+    # 將每日簡報保存到桌面
+    save_to_markdown(daily_brief, user_input)
+
+
 def get_daily_brief(date):
     """
     獲取端傳媒的每日簡報
@@ -84,10 +97,6 @@ def save_to_markdown(content, date):
     except IOError as e:
         print(f"保存文件時發生錯誤: {e}")
 
+
 if __name__ == "__main__":
-    
-    # 獲取用戶輸入的日期
-    user_input = input("請輸入日期 (YYYYMMDD) 或按 Enter 獲取今天的簡報: ")
-    
-    daily_brief = get_daily_brief(user_input if user_input else None)
-    save_to_markdown(daily_brief, user_input)
+    main()
