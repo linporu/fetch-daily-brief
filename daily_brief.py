@@ -7,7 +7,6 @@ def get_daily_brief(date):
     """
     獲取端傳媒的每日簡報
     """
-    # 如果未提供日期，則使用今天的日期
     if date is None:
         date = datetime.now().strftime("%Y%m%d")
     url = f"https://theinitium.com/article/{date}-daily-brief"
@@ -17,31 +16,51 @@ def get_daily_brief(date):
     }
 
     try:
-        # 發送GET請求到目標URL
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # 如果請求失敗，這將引發異常
+        response.raise_for_status()
         
-        # 使用BeautifulSoup解析HTML內容
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # 獲取文章標題
         title = soup.title.string if soup.title else "無標題"
         
-        # 獲取文章內容（這裡假設內容在class為'article-content'的div中）
-        content = soup.find('div', class_='article-content')
+        # 嘗試多種可能的內容選擇器
+        content_selectors = [
+            'div.article-content',
+            'div.content',
+            'article',
+            'main'
+        ]
+        
+        content = None
+        for selector in content_selectors:
+            content = soup.select_one(selector)
+            if content:
+                break
+        
         if content:
+            # 移除不需要的元素
+            for unwanted in content.select('script, style, nav, header, footer'):
+                unwanted.extract()
+            
             # 將HTML內容轉換為Markdown格式
-            # 這裡我們只做了一個簡單的轉換，您可能需要更複雜的HTML到Markdown的轉換邏輯
-            text_content = content.get_text(separator='\n\n', strip=True)
+            paragraphs = content.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+            text_content = '\n\n'.join([
+                f"{'#' * int(p.name[1])} {p.get_text(strip=True)}" if p.name.startswith('h') else p.get_text(strip=True)
+                for p in paragraphs
+            ])
         else:
             text_content = "無法獲取文章內容"
+            
+        # 添加調試信息
+        print(f"文章標題: {title}")
+        print(f"內容長度: {len(text_content)}")
         
-        # 返回Markdown格式的內容
         return f"# {title}\n\n{text_content}\n\n[原文鏈接]({url})"
     
     except requests.RequestException as e:
         return f"# 錯誤\n\n獲取日報時發生錯誤: {e}"
 
+# save_to_markdown
 def save_to_markdown(content):
     """
     將內容保存為Markdown文件到桌面
@@ -65,9 +84,6 @@ def save_to_markdown(content):
         print(f"保存文件時發生錯誤: {e}")
 
 if __name__ == "__main__":
-    # 獲取用戶輸入的日期
     user_input = input("請輸入日期 (YYYYMMDD) 或按 Enter 獲取今天的簡報: ")
-    # 獲取每日簡報內容
     daily_brief = get_daily_brief(user_input if user_input else None)
-    # 將內容保存為Markdown文件
     save_to_markdown(daily_brief)
