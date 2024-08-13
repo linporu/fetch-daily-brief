@@ -9,7 +9,7 @@ def main():
     # 獲取用戶輸入的日期
     # 如果用戶沒有輸入日期，則使用當前日期
     user_input = input("請輸入日期 (YYYYMMDD) 或按 Enter 獲取今天的簡報: ")
-    if user_input is None:
+    if user_input == "":
         user_input = datetime.now().strftime("%Y%m%d")
 
     # 獲取每日簡報
