@@ -49,7 +49,7 @@ def find_valid_date(try_days):
         }
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.head(url, headers=headers)  # 使用 HEAD 請求檢查網頁是否存在
             response.raise_for_status()
             return current_date.strftime('%Y%m%d')  # 回傳成功獲取的日期 str
         except requests.RequestException as e:
@@ -91,6 +91,11 @@ def get_daily_brief(date):
     ]
     for selector in content_selectors:
         content = soup.select_one(selector)
+        """
+        我目前的程式中，這一段會導致效能不是很好
+        因為這會直接抓整個網頁的內容，而不是先看看網頁是否存在後，篩選並只抓取我要的內容
+        """
+
         if content:
             print(f"成功獲取 {date} 的日報內容")  # 記錄成功訊息
             break
@@ -107,7 +112,7 @@ def format_content(content, title, url):
 
     # 處理內容
     # 移除不需要的元素
-    for unwanted in content.select('script, style, nav, header, footer, .ad-banner, .social-share, .comments, .modal, [style*="display:none"]'):
+    for unwanted in content.select('script, style, nav, header, footer'):
         unwanted.extract()
     
     # 嘗試獲取 OG 圖片 URL，使用其他選擇器
