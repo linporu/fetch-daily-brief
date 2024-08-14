@@ -51,9 +51,9 @@ def find_valid_date(try_days):
         try:
             response = requests.get(url, headers=headers)
             response.raise_for_status()
-            return current_date.strftime('%Y%m%d')  # 回傳成功獲取的日期
+            return current_date.strftime('%Y%m%d')  # 回傳成功獲取的日期 str
         except requests.RequestException as e:
-            print(f"獲取 {current_date.strftime('%Y%m%d')} 日報時發生錯誤: 「{e}」")  # 記錄錯誤訊息
+            print(f"嘗試獲取 {current_date.strftime('%Y%m%d')} 的日報內容時發生錯誤: 「{e}」")  # 記錄錯誤訊息
 
         # 將日期減去一天
         current_date -= timedelta(days=1)
@@ -92,7 +92,7 @@ def get_daily_brief(date):
     for selector in content_selectors:
         content = soup.select_one(selector)
         if content:
-            print(f"成功獲取 {date.strftime('%Y%m%d')} 的日報內容")  # 記錄成功訊息
+            print(f"成功獲取 {date} 的日報內容")  # 記錄成功訊息
             break
         else:
             content = None
@@ -125,7 +125,7 @@ def format_content(content, title, url):
 
 def save_to_markdown(content, date):
     """
-    將內容保存為Markdown文件到桌面
+    將內容保存為 Markdown 文件到桌面
     """
     home_dir = os.path.expanduser("~")
     desktop_path = os.path.join(home_dir, "Desktop")
