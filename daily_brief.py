@@ -35,7 +35,7 @@ def main():
 
 def find_valid_date(try_days):
     """
-    return 可以獲取日報的日期，若無則為 None
+    回傳可以獲取日報的日期，若無則為 None
     """
 
     current_date = datetime.now()
