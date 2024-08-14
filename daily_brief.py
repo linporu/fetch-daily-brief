@@ -91,11 +91,7 @@ def get_daily_brief(date):
     ]
     for selector in content_selectors:
         content = soup.select_one(selector)
-        """
-        我目前的程式中，這一段會導致效能不是很好
-        因為這會直接抓整個網頁的內容，而不是先看看網頁是否存在後，篩選並只抓取我要的內容
-        """
-
+        
         if content:
             print(f"成功獲取 {date} 的日報內容")  # 記錄成功訊息
             break
@@ -109,6 +105,11 @@ def format_content(content, title, url):
     """
     將 HTML 內容轉換為 Markdown 格式
     """
+
+    # 處理 title
+    # 若無標題，則設定為 "無標題"
+    if title is None:
+        title = "無標題"
 
     # 處理內容
     # 移除不需要的元素
@@ -128,12 +129,7 @@ def format_content(content, title, url):
             text_content.append(p.get_text(strip=True))
     text_content = '\n\n'.join(text_content)
     
-    # 處理 title
-    # 若無標題，則設定為 "無標題"
-    if title is None:
-        title = "無標題"
-
-    # 回傳格式化後的日報內容，包含圖片 URL
+    # 回傳格式化後的日報內容
     return f"# {title}\n\n![圖片]({image_url})\n\n{text_content}\n\n[原文連結]({url})"
 
 
