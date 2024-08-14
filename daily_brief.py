@@ -104,13 +104,15 @@ def format_content(content, title, url):
     """
     將 HTML 內容轉換為 Markdown 格式
     """
+
+    # 處理內容
     # 移除不需要的元素
     for unwanted in content.select('script, style, nav, header, footer, .ad-banner, .social-share, .comments, .modal, [style*="display:none"]'):
         unwanted.extract()
     
-    # 獲取 OG 圖片 URL
-    image_meta = content.find('meta', property='og:image')
-    image_url = image_meta['content'] if image_meta else None  # 獲取圖片 URL，若不存在則為 None
+    # 嘗試獲取 OG 圖片 URL，使用其他選擇器
+    image_meta = content.find('meta', property='og:image') or content.find('img')
+    image_url = image_meta['content'] if image_meta and 'content' in image_meta.attrs else image_meta['src'] if image_meta else None
 
     # 將 HTML 內容轉換為 Markdown 格式
     paragraphs = content.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
@@ -119,6 +121,11 @@ def format_content(content, title, url):
         for p in paragraphs
     ])
     
+    # 處理標題
+    # 若無標題，則設定為 "無標題"
+    if title is None:
+        title = "無標題"
+
     # 回傳格式化後的日報內容，包含圖片 URL
     return f"# {title}\n\n![圖片]({image_url})\n\n{text_content}\n\n[原文鏈接]({url})"
 
@@ -138,6 +145,7 @@ def save_to_markdown(content, date):
         print(f"文件已保存到: {file_path}")
     except IOError as e:
         print(f"保存文件時發生錯誤: {e}")
+
 
 if __name__ == "__main__":
     main()
