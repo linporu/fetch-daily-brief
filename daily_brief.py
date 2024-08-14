@@ -67,14 +67,13 @@ def get_daily_brief(date):
     """
     獲取端傳媒的日報網站內容，回傳內容、標題、網址
     """
-    if date is None:
-        return "# 錯誤\n\n指定時間內無法獲取日報內容"
 
     url = f"https://theinitium.com/article/{date}-daily-brief"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
 
+    # 訪問網站
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -138,8 +137,12 @@ def save_to_markdown(content, date):
     """
     將內容保存為 Markdown 文件到桌面
     """
+
+    # 設定桌面路徑
     home_dir = os.path.expanduser("~")
     desktop_path = os.path.join(home_dir, "Desktop")
+
+    # 設定檔案名稱與路徑
     filename = f"{date}-daily-brief.md"
     file_path = os.path.join(desktop_path, filename)
     
