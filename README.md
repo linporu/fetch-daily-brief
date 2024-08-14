@@ -63,7 +63,7 @@ Contributions are welcome! If you have any suggestions for improvements or have 
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Content Usage Policy
 
@@ -74,7 +74,7 @@ Please note that content from Initium Media is subject to their usage policies. 
 3. **Attribution**: If you use any content, proper attribution must be given to Initium Media.
 4. **Compliance with Local Laws**: Ensure that your use of the content complies with all applicable local laws and regulations.
 
-For more detailed information, please refer to the [Initium Media Legal Notice](https://www.initium.group/legal-notice.html).
+For more detailed information, please refer to the [Initium Media Copyright Notice](https://theinitium.com/copyright).
 
 ## Disclaimer
 
