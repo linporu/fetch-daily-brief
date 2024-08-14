@@ -114,20 +114,22 @@ def format_content(content, title, url):
     image_meta = content.find('meta', property='og:image') or content.find('img')
     image_url = image_meta['content'] if image_meta and 'content' in image_meta.attrs else image_meta['src'] if image_meta else None
 
-    # 將 HTML 內容轉換為 Markdown 格式
-    paragraphs = content.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
-    text_content = '\n\n'.join([
-        f"{'#' * int(p.name[1])} {p.get_text(strip=True)}" if p.name.startswith('h') else p.get_text(strip=True)
-        for p in paragraphs
-    ])
+    # 將 HTML 內容的 subtitle 轉換為 Markdown 格式
+    text_content = []
+    for p in content.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p']):
+        if p.name.startswith('h'):
+            text_content.append(f"{'#' * int(p.name[1])} {p.get_text(strip=True)}")
+        else:
+            text_content.append(p.get_text(strip=True))
+    text_content = '\n\n'.join(text_content)
     
-    # 處理標題
+    # 處理 title
     # 若無標題，則設定為 "無標題"
     if title is None:
         title = "無標題"
 
     # 回傳格式化後的日報內容，包含圖片 URL
-    return f"# {title}\n\n![圖片]({image_url})\n\n{text_content}\n\n[原文鏈接]({url})"
+    return f"# {title}\n\n![圖片]({image_url})\n\n{text_content}\n\n[原文連結]({url})"
 
 
 def save_to_markdown(content, date):
