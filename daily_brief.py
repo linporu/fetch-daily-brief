@@ -21,6 +21,7 @@ def main():
     
     # 獲取日報內容、標題、網址
     content, title, url = get_daily_brief(valid_date)
+    # 若日報無內容，則終止程式
     if content is None:
         print("錯誤: 當天日報無內容")
         return
