@@ -5,25 +5,40 @@ import os
 
 
 def main():
-    
-    # 獲取可以獲取日報的日期
-    valid_date = find_valid_date()
-    
-    # 獲取日報內
-    daily_brief = get_daily_brief(valid_date)
-    
-    # 將日報內容保存到桌面
-    save_to_markdown(daily_brief, valid_date)
-
-
-def find_valid_date():
     """
-    return 可以獲取日報的日期
+    本程式用於獲取端傳媒的日報內容，並保存到桌面
+    """
+    
+    # 設定重複嘗試獲取日報的次數
+    try_days = 7 
+
+    # 獲取可以獲取日報的日期
+    valid_date = find_valid_date(try_days)
+    # 若無法獲取日報的日期，則終止程式
+    if valid_date is None:  
+        print(f"錯誤：無法獲取 {try_days} 天內的日報內容")
+        return
+    
+    # 獲取日報內容、標題、網址
+    content, title, url = get_daily_brief(valid_date)
+    if content is None:
+        print("錯誤: 當天日報無內容")
+        return
+
+    # 調整日報內容格式
+    formated_daily_brief = format_content(content, title, url)
+
+    # 將日報內容保存到桌面
+    save_to_markdown(formated_daily_brief, valid_date)
+
+
+def find_valid_date(try_days):
+    """
+    return 可以獲取日報的日期，若無則為 None
     """
 
     current_date = datetime.now()
-    try_days = 7 # 設定
-    
+        
     # 嘗試獲取日報，若不成功則嘗試至多 try_days 天
     for _ in range(try_days):  
         url = f"https://theinitium.com/article/{current_date.strftime('%Y%m%d')}-daily-brief"
@@ -36,21 +51,20 @@ def find_valid_date():
         try:
             response = requests.get(url, headers=headers)
             response.raise_for_status()
-            print(f"成功獲取 {current_date.strftime('%Y%m%d')} 的日報內容")  # 記錄成功訊息
-            return current_date.strftime('%Y%m%d')  # 返回成功獲取的日期
+            return current_date.strftime('%Y%m%d')  # 回傳成功獲取的日期
         except requests.RequestException as e:
             print(f"獲取 {current_date.strftime('%Y%m%d')} 日報時發生錯誤: 「{e}」")  # 記錄錯誤訊息
 
         # 將日期減去一天
         current_date -= timedelta(days=1)
 
-    # 如果七天內都無法獲取，返回 None
+    # 如果七天內都無法獲取，回傳 None
     return None  
 
 
 def get_daily_brief(date):
     """
-    獲取端傳媒的日報網站內容
+    獲取端傳媒的日報網站內容，回傳內容、標題、網址
     """
     if date is None:
         return "# 錯誤\n\n指定時間內無法獲取日報內容"
@@ -62,10 +76,12 @@ def get_daily_brief(date):
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    
     soup = BeautifulSoup(response.text, 'html.parser')
-    title = soup.title.string if soup.title else "無標題"
+
+    # 獲取標題
+    title = soup.title.string if soup.title else None
     
+    # 獲取內容
     # 嘗試多種可能的內容選擇器
     content_selectors = [
         'div.article-content',
@@ -73,28 +89,42 @@ def get_daily_brief(date):
         'article',
         'main'
     ]
-    
-    content = None
     for selector in content_selectors:
         content = soup.select_one(selector)
         if content:
+            print(f"成功獲取 {date.strftime('%Y%m%d')} 的日報內容")  # 記錄成功訊息
             break
+        else:
+            content = None
+
+    return content, title, url
+
+
+def format_content(content, title, url):
+    """
+    將 HTML 內容轉換為 Markdown 格式
+    """
+
+    # 處理內容
+    # 移除不需要的元素
+    for unwanted in content.select('script, style, nav, header, footer'):
+        unwanted.extract()
     
-    if content:
-        # 移除不需要的元素
-        for unwanted in content.select('script, style, nav, header, footer'):
-            unwanted.extract()
-        
-        # 將HTML內容轉換為Markdown格式
-        paragraphs = content.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
-        text_content = '\n\n'.join([
-            f"{'#' * int(p.name[1])} {p.get_text(strip=True)}" if p.name.startswith('h') else p.get_text(strip=True)
-            for p in paragraphs
-        ])
-        
-        return f"# {title}\n\n{text_content}\n\n[原文鏈接]({url})"
+    # 將HTML內容轉換為Markdown格式
+    paragraphs = content.find_all(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+    text_content = '\n\n'.join([
+        f"{'#' * int(p.name[1])} {p.get_text(strip=True)}" if p.name.startswith('h') else p.get_text(strip=True)
+        for p in paragraphs
+    ])
     
-    return "# 錯誤\n\n無法獲取任何日報內容"
+    # 處理標題
+    # 若無標題，則設定為 "無標題"
+    if title is None:
+        title = "無標題"
+
+    # 回傳格式化後的日報內容
+    return f"# {title}\n\n{text_content}\n\n[原文鏈接]({url})"
+
 
 def save_to_markdown(content, date):
     """
