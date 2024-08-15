@@ -149,9 +149,9 @@ def save_to_markdown(content, date):
     try:
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
-        print(f"文件已保存到: {file_path}")
+        print(f"日報內容已存檔至: {file_path}")
     except IOError as e:
-        print(f"保存文件時發生錯誤: {e}")
+        print(f"日報內容存檔時發生錯誤: 「{e}」")
 
 
 if __name__ == "__main__":
