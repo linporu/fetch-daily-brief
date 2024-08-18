@@ -2,9 +2,13 @@
 
 This Python script automatically fetches the daily brief content from Initium Media and saves it as a Markdown file on your desktop.
 
+## Disclaimer
+
+This script is intended for personal learning and research purposes only. Users are responsible for ensuring their use complies with Initium Media's terms of service and applicable laws. The developers are not responsible for any legal issues arising from the use of this script.
+
 ## Features
 
-- Automatically retrieves daily brief content from the last 7 days
+- Automatically retrieves the latest daily brief content from the last 7 days
 - Formats the content into Markdown
 - Saves the brief directly to the user's desktop
 - Implements error handling and logging
@@ -75,7 +79,3 @@ Please note that content from Initium Media is subject to their usage policies. 
 4. **Compliance with Local Laws**: Ensure that your use of the content complies with all applicable local laws and regulations.
 
 For more detailed information, please refer to the [Initium Media Copyright Notice](https://theinitium.com/copyright).
-
-## Disclaimer
-
-This script is intended for personal learning and research purposes only. Users are responsible for ensuring their use complies with Initium Media's terms of service and applicable laws. The developers are not responsible for any legal issues arising from the use of this script.
