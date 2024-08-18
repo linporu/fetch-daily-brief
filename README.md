@@ -1,6 +1,6 @@
 # Daily Brief Fetcher
 
-This Python script automatically fetches the daily brief content from Initium Media and saves it as a Markdown file on your desktop.
+This Python script automatically fetches the latest daily brief content from Initium Media and saves it as a Markdown file on your desktop.
 
 ## Disclaimer
 
