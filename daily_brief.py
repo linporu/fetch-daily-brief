@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import os
+import subprocess
+import platform
 
 
 def main():
@@ -29,8 +31,13 @@ def main():
     # 調整日報內容格式
     formated_daily_brief = format_content(content, title, url)
 
-    # 將日報內容保存到桌面
-    save_to_markdown(formated_daily_brief, valid_date)
+    # 將日報內容保存到桌面，並回傳檔案路徑
+    file_path = save_to_markdown(formated_daily_brief, valid_date)
+
+    # 自動開啟日報
+    open_file(file_path)
+    if file_path is None:
+        return
 
 
 def find_valid_date(try_days):
@@ -150,8 +157,25 @@ def save_to_markdown(content, date):
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
         print(f"日報內容已存檔至: {file_path}")
+        return file_path
     except IOError as e:
         print(f"日報內容存檔時發生錯誤: 「{e}」")
+        return None
+
+
+def open_file(file_path):
+    """
+    自動開啟指定的檔案，根據作業系統選擇命令
+    """
+    try:
+        if platform.system() == "Darwin":  # macOS
+            subprocess.Popen(['open', file_path])
+        elif platform.system() == "Windows":  # Windows
+            subprocess.Popen(['start', file_path], shell=True)
+        else:  # Linux 或其他系統
+            subprocess.Popen(['xdg-open', file_path])
+    except Exception as e:
+        print(f"開啟檔案時發生錯誤: 「{e}」")
 
 
 if __name__ == "__main__":
