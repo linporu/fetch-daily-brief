@@ -32,13 +32,24 @@ def main():
     formated_daily_brief = format_content(content, title, url)
 
     # 將日報內容保存到桌面，並回傳檔案路徑
-    file_path = save_to_markdown(formated_daily_brief, valid_date)
+    file_path, file_name = save_to_markdown(formated_daily_brief, valid_date)
 
     # 自動開啟日報
     open_file(file_path)
     if file_path is None:
         return
-
+    
+    # 詢問是否刪除檔案
+    prompt = input(f"是否刪除 {file_name} ？(Y/N)： ").lower()
+    while True:
+        if prompt == "y":
+            delete_file(file_path, file_name)
+            break
+        if prompt == "n":
+            break
+        else:
+            print("請輸入 Y 或 N")
+      
 
 def find_valid_date(try_days):
     """
@@ -150,14 +161,14 @@ def save_to_markdown(content, date):
     desktop_path = os.path.join(home_dir, "Desktop")
 
     # 設定檔案名稱與路徑
-    filename = f"{date}-daily-brief.md"
-    file_path = os.path.join(desktop_path, filename)
+    file_name = f"{date}-daily-brief.md"
+    file_path = os.path.join(desktop_path, file_name)
     
     try:
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(content)
         print(f"日報內容已存檔至: {file_path}")
-        return file_path
+        return file_path, file_name
     except IOError as e:
         print(f"日報內容存檔時發生錯誤: 「{e}」")
         return None
@@ -176,6 +187,17 @@ def open_file(file_path):
             subprocess.Popen(['xdg-open', file_path])
     except Exception as e:
         print(f"開啟檔案時發生錯誤: 「{e}」")
+
+
+def delete_file(file_path, file_name):
+    """刪除指定路徑的檔案"""
+    try:
+        os.remove(file_path)
+        print(f"日報檔案 {file_name} 已成功刪除")
+    except FileNotFoundError:
+        print(f"日報檔案 {file_name} 不存在")
+    except Exception as e:
+        print(f"刪除日報檔案時發生錯誤: {e}")
 
 
 if __name__ == "__main__":
