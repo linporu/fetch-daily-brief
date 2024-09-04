@@ -40,8 +40,8 @@ def main():
         return
     
     # 詢問是否刪除檔案
-    prompt = input(f"是否刪除 {file_name} ？(Y/N)： ").lower()
     while True:
+        prompt = input(f"是否刪除 {file_name} ？(Y/N)： ").lower()
         if prompt == "y":
             delete_file(file_path, file_name)
             break
@@ -49,6 +49,7 @@ def main():
             break
         else:
             print("請輸入 Y 或 N")
+            continue
       
 
 def find_valid_date(try_days):
